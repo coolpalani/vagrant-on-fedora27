@@ -1,0 +1,35 @@
+How to Install Vagrant and Libvirt Fedora 27
+Check for cpu Virtualization
+
+lsmod | grep kvm
+kvm_intel             167936  3
+kvm                   499712  1 kvm_intel
+
+Install
+
+sudo dnf -y install vagrant
+sudo dnf -y install qemu-kvm virt-manager virt-install
+suod dnf -y install qemu libvirt libvirt-devel ruby-devel gcc
+sudo gpasswd -a "${USER}" libvirt
+
+If you Enable kvm_intel nested, you can create nested virtual machine on virtual machine.
+
+echo "options kvm_intel nested=1" | \
+sudo tee /etc/modprobe.d/qemu-system-x86.conf
+sudo reboot
+
+Install Plugin
+
+vagrant plugin install vagrant-libvirt
+
+Possible problems with plugin installation on Linux
+
+In case of problems with building nokogiri and ruby-libvirt gem, install missing development libraries for libxslt, libxml2 and libvirt.
+
+sudo dnf install libxslt-devel libxml2-devel libvirt-devel \
+  libguestfs-tools-c ruby-devel gcc
+
+Test
+
+vagrant init centos/7
+vagrant up --provider libvirt
